@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 import pytest
 
 from shu_plugin_sdk.testing import FakeHostBuilder, HttpRequestFailed
@@ -137,12 +139,13 @@ async def test_strict_mode_raises_on_unregistered_route() -> None:
 @pytest.mark.asyncio
 async def test_strict_mode_error_lists_registered_routes() -> None:
     """The AssertionError message includes the registered routes for debugging."""
+    registered_url = "https://api.example.com/a"
     host = (
         FakeHostBuilder()
-        .with_http_response("GET", "https://api.example.com/a", {"status_code": 200, "headers": {}, "body": "ok"})
+        .with_http_response("GET", registered_url, {"status_code": 200, "headers": {}, "body": "ok"})
         .build()
     )
-    with pytest.raises(AssertionError, match="https://api.example.com/a"):
+    with pytest.raises(AssertionError, match=re.escape(registered_url)):
         await host.http.fetch("GET", "https://api.example.com/b")
 
 

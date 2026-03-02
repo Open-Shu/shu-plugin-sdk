@@ -186,7 +186,18 @@ class EchoPlugin:
                         raise RetryableError(str(e)) from e
                     raise NonRetryableError(str(e)) from e
 
-            response = await _do_fetch()
+            try:
+                response = await _do_fetch()
+            except Exception as e:
+                details = {"url": url, "error": str(e)}
+                status_code = getattr(e, "status_code", None)
+                if status_code is not None:
+                    details["status_code"] = status_code
+                return PluginResult.err(
+                    "Fetch request failed.",
+                    code="fetch_failed",
+                    details=details,
+                )
             return PluginResult.ok(data={
                 "status_code": response.get("status_code"),
                 "body": response.get("body"),
