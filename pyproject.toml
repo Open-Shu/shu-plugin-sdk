@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shu-plugin-sdk"
+version = "0.1.0"
+description = "Developer SDK for building and testing Shu plugins"
+requires-python = ">=3.11"
+dependencies = [
+    "jsonschema>=3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio>=0.23.0",
+]
+
+[project.scripts]
+shu-plugin-template = "shu_plugin_sdk.template_cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["shu_plugin_sdk*", "_cookiecutter*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
